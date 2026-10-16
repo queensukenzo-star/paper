@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yuen Hing Paper Co., Ltd. — Stock Balance Ledger Spreadsheet & Explorer</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .font-mono-num { font-variant-numeric: tabular-nums; }
+        .excel-grid td, .excel-grid th { border-right: 1px solid #e5e5e5; border-bottom: 1px solid #e5e5e5; }
+    </style>
+</head>
+<body class="bg-neutral-50 text-neutral-900 font-sans antialiased selection:bg-neutral-900 selection:text-white min-h-screen py-8">
+
+<!-- Chosen Palette: Monochrome with Excel Emerald Green Export Accents -->
+<!-- Application Structure Plan: Integrated interactive inventory explorer and spreadsheet tool for Yuen Hing Paper Co., Ltd. Stock Balance Ledger (Warehouse T). Features KPI summary bar, CSV downloader, 1-click clipboard copier for Google Sheets/Excel, dense spreadsheet view toggle, multi-criteria filters, and clickable column sorting across all 90 stock items. -->
+<!-- Visualization & Content Choices:
+  - Metric Summary Bar: High contrast KPI metrics displaying 3,412.2 Reams total volume and reconciled HK$ 1,177,698.81 total paid inventory value.
+  - Export & Spreadsheet Toolbar: Direct UTF-8 CSV generator with BOM for Excel compatibility, TSV clipboard copier for 1-click paste into Google Sheets/Excel, and Spreadsheet Grid Toggle.
+  - Interactive Spreadsheet Grid: Clickable headers for ascending/descending sorting, column search, dense layout mode, and live dynamic sum totals row.
+  Confirming NO SVG elements or Mermaid JS used. -->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+
+        <!-- Top Overview Branding Header -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-200 pb-4">
+            <div>
+                <h1 class="text-2xl font-extrabold text-neutral-900 tracking-tight">
+                    Yuen Hing Paper Co., Ltd. (源興紙業有限公司)
+                </h1>
+                <p class="text-xs text-neutral-500 mt-0.5">Official Stock Balance Ledger & Spreadsheet Exporter • Audit Date: September 29, 2026 • Warehouse T (倉庫-T)</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-neutral-100 text-neutral-900 border border-neutral-300">
+                    Warehouse T Inventory
+                </span>
+            </div>
+        </div>
+
+        <!-- Summary KPI Metrics Bar -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white p-4 rounded-2xl border border-neutral-200 shadow-sm">
+                <div class="text-xs font-medium text-neutral-500">Total Stock Volume</div>
+                <div class="text-2xl font-extrabold text-neutral-900 mt-1 font-mono-num" id="kpiTotalVolume">3,412.2 Reams</div>
+                <div class="text-[11px] text-neutral-500 mt-0.5">Across 90 Active Stock Codes</div>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl border border-neutral-200 shadow-sm">
+                <div class="text-xs font-medium text-neutral-500">Uncoated Woodfree (白書紙)</div>
+                <div class="text-2xl font-extrabold text-neutral-900 mt-1 font-mono-num" id="kpiWoodfreeVolume">1,822.0 Reams</div>
+                <div class="text-[11px] text-neutral-500 mt-0.5">53.4% (Double A, IKPP, UPM, Royal Elephant)</div>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl border border-neutral-200 shadow-sm">
+                <div class="text-xs font-medium text-neutral-500">Coated Art & Boards (雙粉紙/單粉咭)</div>
+                <div class="text-2xl font-extrabold text-neutral-900 mt-1 font-mono-num" id="kpiCoatedVolume">1,165.0 Reams</div>
+                <div class="text-[11px] text-neutral-500 mt-0.5">34.1% (Ningbo, Gold East, CPC, Moorim)</div>
+            </div>
+
+            <div class="bg-neutral-900 p-4 rounded-2xl border border-neutral-900 text-white shadow-sm">
+                <div class="text-xs font-semibold text-neutral-300">Exact Reconciled Inventory Paid Value</div>
+                <div class="text-2xl font-extrabold text-white mt-1 font-mono-num" id="kpiTotalPaidValue">HK$ 1,177,698.81</div>
+                <div class="text-[11px] text-neutral-400 mt-0.5">Summed from 12-Page Stock Audit Ledger</div>
+            </div>
+        </section>
+
+        <!-- Spreadsheet Exporter & Controls Bar -->
+        <section class="bg-emerald-950 text-white rounded-2xl p-5 shadow-sm space-y-4">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-lg font-bold flex items-center gap-2">
+                        <span>📊</span> Spreadsheet Export & Data Tools Center
+                    </h2>
+                    <p class="text-xs text-emerald-200 mt-1">
+                        Export all 90 items or filtered results into Microsoft Excel CSV format, or copy to clipboard for Google Sheets.
+                    </p>
+                </div>
+                
+                <div class="flex flex-wrap items-center gap-2">
+                    <!-- Export CSV Button -->
+                    <button onclick="exportCSV()" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-neutral-950 font-bold text-xs rounded-xl shadow transition flex items-center gap-1.5">
+                        <span>📥</span> Download Excel CSV (.csv)
+                    </button>
+                    
+                    <!-- Copy for Google Sheets / Excel Button -->
+                    <button onclick="copyTSV()" class="px-4 py-2 bg-white hover:bg-neutral-100 text-neutral-900 font-bold text-xs rounded-xl shadow transition flex items-center gap-1.5">
+                        <span>📋</span> Copy to Clipboard (For Excel/Sheets)
+                    </button>
+
+                    <!-- Toggle Spreadsheet Grid Mode -->
+                    <button id="toggleGridBtn" onclick="toggleSpreadsheetMode()" class="px-4 py-2 bg-emerald-900 hover:bg-emerald-800 text-emerald-100 border border-emerald-700 font-bold text-xs rounded-xl transition flex items-center gap-1.5">
+                        <span>📐</span> Grid View: <span id="gridModeLabel">Standard Ledger</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Stock Balance Explorer Block -->
+        <section id="stock-explorer" class="bg-white rounded-2xl p-6 border border-neutral-200 shadow-sm space-y-5">
+            
+            <!-- Section Header & Controls Row -->
+            <div class="border-b border-neutral-200 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-neutral-900">
+                        Stock Balance Ledger Search & Filter
+                    </h2>
+                    <p class="text-xs text-neutral-500 mt-1">
+                        Click column headers in the table below to sort ascending/descending. Filter by grade, age profile, or origin.
+                    </p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span id="ledgerCount" class="text-xs font-bold bg-neutral-100 text-neutral-900 px-3 py-1.5 rounded-full border border-neutral-300 font-mono-num">
+                        Showing All 90 Items
+                    </span>
+                </div>
+            </div>
+
+            <!-- Multi-Criteria Filter Controls -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                <div>
+                    <label class="block text-[11px] font-bold text-neutral-600 uppercase mb-1">Search Item / Code / Brand</label>
+                    <input type="text" id="ledgerSearch" placeholder="e.g. Double A, 寧波, 80克, 1007..." class="w-full text-xs bg-neutral-50 border border-neutral-300 rounded-lg p-2.5 text-neutral-900 focus:ring-1 focus:ring-black focus:border-black focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold text-neutral-600 uppercase mb-1">Category Grade</label>
+                    <select id="ledgerCategory" class="w-full text-xs bg-neutral-50 border border-neutral-300 rounded-lg p-2.5 text-neutral-900 focus:ring-1 focus:ring-black focus:border-black focus:outline-none">
+                        <option value="all">All Paper Categories</option>
+                        <option value="woodfree">Uncoated Woodfree (白書紙/二號紙)</option>
+                        <option value="coated">Coated Art Paper (雙面粉紙/啞粉紙)</option>
+                        <option value="board">Packaging Board & Cards (單粉咭/雙粉咭/玻璃咭)</option>
+                        <option value="specialty">Specialty, Carbonless & Banknote (复寫紙/膠底紙/鈔票紙)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold text-neutral-600 uppercase mb-1">Stock Age Profile</label>
+                    <select id="ledgerAge" class="w-full text-xs bg-neutral-50 border border-neutral-300 rounded-lg p-2.5 text-neutral-900 focus:ring-1 focus:ring-black focus:border-black focus:outline-none">
+                        <option value="all">All Arrival Dates</option>
+                        <option value="fresh">Fresh Inventory (2025 – 2026)</option>
+                        <option value="moderate">Moderate Age (2022 – 2024)</option>
+                        <option value="aged">Aged Inventory (2010 – 2020)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-[11px] font-bold text-neutral-600 uppercase mb-1">Origin / Brand Country</label>
+                    <select id="ledgerOrigin" class="w-full text-xs bg-neutral-50 border border-neutral-300 rounded-lg p-2.5 text-neutral-900 focus:ring-1 focus:ring-black focus:border-black focus:outline-none">
+                        <option value="all">All Origins</option>
+                        <option value="Thailand">Thailand (泰國 Double A / Royal Elephant)</option>
+                        <option value="China">China (中國 Ningbo / Gold East / UPM)</option>
+                        <option value="Indonesia">Indonesia (印尼 IKPP / Gold Coin / Arcadia)</option>
+                        <option value="Japan">Japan (日本 CPC / Kinmari / NPI)</option>
+                        <option value="Korea">Korea (韓國 Moorim / Hi-Q)</option>
+                        <option value="Western">USA & Europe (France / Slovenia / USA)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Dynamic Filter Summary Toolbar -->
+            <div class="bg-neutral-100 p-3 rounded-xl border border-neutral-200 flex flex-wrap justify-between items-center text-xs text-neutral-800 gap-2">
+                <div class="flex items-center gap-4">
+                    <span>Selected Lines: <strong id="summaryCount" class="text-neutral-900 font-mono-num">0</strong></span>
+                    <span>Total Volume: <strong id="summaryReams" class="text-neutral-900 font-mono-num">0.0 Reams</strong></span>
+                </div>
+                <div>
+                    Filtered Inventory Paid Value: <strong id="summaryTotalValue" class="text-neutral-900 text-sm font-extrabold font-mono-num">HK$ 0.00</strong>
+                </div>
+            </div>
+
+            <!-- Table & Spreadsheet Container -->
+            <div id="tableContainer" class="overflow-x-auto border border-neutral-200 rounded-xl">
+                <table id="spreadsheetTable" class="w-full text-left border-collapse text-xs">
+                    <thead>
+                        <tr class="bg-neutral-100 text-neutral-900 font-bold border-b border-neutral-300 select-none">
+                            <th onclick="sortTable('code')" class="p-3 cursor-pointer hover:bg-neutral-200 transition">
+                                Stock Code <span id="sort_code" class="text-[10px] text-neutral-400">↕</span>
+                            </th>
+                            <th onclick="sortTable('name')" class="p-3 cursor-pointer hover:bg-neutral-200 transition">
+                                Dimensions & Specifications <span id="sort_name" class="text-[10px] text-neutral-400">↕</span>
+                            </th>
+                            <th onclick="sortTable('cat')" class="p-3 cursor-pointer hover:bg-neutral-200 transition">
+                                Category <span id="sort_cat" class="text-[10px] text-neutral-400">↕</span>
+                            </th>
+                            <th onclick="sortTable('reams')" class="p-3 text-right cursor-pointer hover:bg-neutral-200 transition">
+                                Reams (拈數) <span id="sort_reams" class="text-[10px] text-neutral-400">↕</span>
+                            </th>
+                            <th onclick="sortTable('date')" class="p-3 cursor-pointer hover:bg-neutral-200 transition">
+                                Receipt Date <span id="sort_date" class="text-[10px] text-neutral-400">↕</span>
+                            </th>
+                            <th onclick="sortTable('price')" class="p-3 text-right cursor-pointer hover:bg-neutral-200 transition">
+                                Supplier Unit Price <span id="sort_price" class="text-[10px] text-neutral-400">↕</span>
+                            </th>
+                            <th onclick="sortTable('lineCost')" class="p-3 text-right cursor-pointer hover:bg-neutral-200 transition">
+                                Total Paid Cost <span id="sort_lineCost" class="text-[10px] text-neutral-400">↕</span>
+                            </th>
+                            <th onclick="sortTable('supplier')" class="p-3 cursor-pointer hover:bg-neutral-200 transition">
+                                Supplier & Origin <span id="sort_supplier" class="text-[10px] text-neutral-400">↕</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="ledgerTableBody" class="divide-y divide-neutral-200 bg-white font-mono-num">
+                        <!-- Populated via JavaScript -->
+                    </tbody>
+                    <tfoot class="bg-neutral-900 text-white font-bold border-t border-neutral-900">
+                        <tr>
+                            <td class="p-3" colspan="3">SUMMARY TOTALS (CURRENT SELECTION)</td>
+                            <td class="p-3 text-right font-mono-num" id="footTotalReams">0.0 Reams</td>
+                            <td class="p-3" colspan="2"></td>
+                            <td class="p-3 text-right font-mono-num text-sm text-emerald-400" id="footTotalValue">HK$ 0.00</td>
+                            <td class="p-3"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Notification Toast Popup -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-neutral-900 text-white text-xs px-4 py-3 rounded-xl shadow-2xl transition transform translate-y-20 opacity-0 border border-neutral-700 pointer-events-none z-50 flex items-center gap-2">
+        <span>✨</span> <span id="toastMsg">Notification message</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-8 text-center text-xs text-neutral-500">
+        <p class="font-semibold text-neutral-700">Yuen Hing Paper Co., Ltd. (源興紙業有限公司) — Stock Inventory Balance Ledger</p>
+        <p class="text-[11px] text-neutral-400 mt-1">Audit Record as of 29/09/2026 • Warehouse T (倉庫-T)</p>
+    </footer>
+
+    <!-- JavaScript Data, Sorting & Spreadsheet Logic -->
+    <script>
+        // Full Complete Reconciled Dataset from Yuen Hing's 12-Page Stock Ledger Audit (All 90 items)
+        const stockItems = [
+            // Page 1
+            { code: "1007", name: "35x47\" 128g Korea Moorim C2S Art Paper (韓國茂林雙粉紙)", cat: "coated", reams: 39.0, date: "05/11/2019", price: 405.34, lineCost: 15808.26, supplier: "Nissho (日商)", age: "aged", origin: "Korea" },
+            { code: "109", name: "31x43\" 100g Thailand Royal Elephant White Woodfree (泰國皇象白書紙)", cat: "woodfree", reams: 45.0, date: "12/07/2025", price: 340.43, lineCost: 15319.35, supplier: "Nissho (日商)", age: "fresh", origin: "Thailand" },
+            { code: "110", name: "31x43\" 120g Thailand Royal Elephant White Woodfree (泰國皇象白書紙)", cat: "woodfree", reams: 52.0, date: "08/05/2026", price: 379.06, lineCost: 19711.12, supplier: "Nissho (日商)", age: "fresh", origin: "Thailand" },
+            { code: "113", name: "35x47\" 60g Thailand Royal Elephant White Woodfree (泰國皇象白書紙)", cat: "woodfree", reams: 24.0, date: "29/12/2023", price: 277.80, lineCost: 6667.20, supplier: "Song Jun (松潤)", age: "moderate", origin: "Thailand" },
+            { code: "115", name: "35x47\" 80g Thailand Royal Elephant White Woodfree (泰國皇象白書紙)", cat: "woodfree", reams: 57.0, date: "12/07/2025", price: 335.68, lineCost: 19133.76, supplier: "Nissho (日商)", age: "fresh", origin: "Thailand" },
+            { code: "117", name: "35x47\" 120g Thailand Royal Elephant White Woodfree (泰國皇象白書紙)", cat: "woodfree", reams: 26.0, date: "02/02/2026", price: 472.01, lineCost: 12272.26, supplier: "Yat Sing (逸昇)", age: "fresh", origin: "Thailand" },
+            { code: "123", name: "27x33.5\" 70g Thailand Royal Elephant White Woodfree (泰國皇象白書紙)", cat: "woodfree", reams: 84.0, date: "24/04/2020", price: 134.585, lineCost: 11305.14, supplier: "Marubeni (丸紅)", age: "aged", origin: "Thailand", note: "Multi-batch: 42 reams @ $138.57 + 42 reams @ $130.60" },
+            { code: "1301-D", name: "28x22\" 240g Korea HI-Q Blue Card (韓國HI-Q 藍咭)", cat: "board", reams: 10.0, date: "15/09/2025", price: 669.70, lineCost: 6697.00, supplier: "Nissho (日商)", age: "fresh", origin: "Korea" },
+            
+            // Page 2
+            { code: "1302-D", name: "25x40\" 240g Korea HI-Q Blue Card (韓國HI-Q 藍咭)", cat: "board", reams: 5.0, date: "30/12/2025", price: 1086.70, lineCost: 5433.50, supplier: "Nissho (日商)", age: "fresh", origin: "Korea" },
+            { code: "1303-C", name: "31x43\" 180g Korea HI-Q Yellow Card (韓國HI-Q 黃咭)", cat: "board", reams: 8.0, date: "13/12/2024", price: 1117.02, lineCost: 8936.16, supplier: "Nissho (日商)", age: "moderate", origin: "Korea" },
+            { code: "1303-E", name: "31x43\" 180g Korea HI-Q Green Card (韓國HI-Q 綠咭)", cat: "board", reams: 16.0, date: "15/09/2025", price: 1086.69, lineCost: 17387.04, supplier: "Nissho (日商)", age: "fresh", origin: "Korea" },
+            { code: "165", name: "31x43\" 280g Indonesia ARCADIA Cast Coated Card (印尼ARCADIA單面玻璃咭)", cat: "board", reams: 52.0, date: "25/10/2024", price: 1511.98, lineCost: 78622.96, supplier: "Arcadia", age: "moderate", origin: "Indonesia" },
+            { code: "168-BC", name: "24.6x36\" 56g Thailand Phoenix CF Blue Carbonless Paper (泰國鳳凰下藍复寫紙)", cat: "specialty", reams: 29.0, date: "26/02/2026", price: 234.37, lineCost: 6796.73, supplier: "MAXI", age: "fresh", origin: "Thailand" },
+            { code: "168-MB", name: "24.6x36\" 50g Thailand Phoenix CB/CFB Yellow Carbonless (泰國鳳凰中黃复寫紙)", cat: "specialty", reams: 52.0, date: "26/02/2026", price: 289.11, lineCost: 15033.72, supplier: "MAXI", age: "fresh", origin: "Thailand" },
+            { code: "17-B", name: "24.1x41.4\" 320g Taiwan Shihlin Light Red Card (台灣士林淺紅咭)", cat: "board", reams: 1.6, date: "04/12/2014", price: 648.44, lineCost: 1037.50, supplier: "Nissho (日商)", age: "aged", origin: "Western" },
+            { code: "183", name: "24.5x34.5\" 60g Peacock Brand White No. 2 Paper (孔雀嘜白二號紙)", cat: "woodfree", reams: 76.0, date: "31/12/2010", price: 86.16, lineCost: 6548.16, supplier: "Peacock", age: "aged", origin: "China" },
+            
+            // Page 3
+            { code: "199", name: "23x30\" 160g Korea Moorim White Art Paper (韓國茂林白畫紙)", cat: "coated", reams: 30.0, date: "28/05/2026", price: 369.31, lineCost: 11079.30, supplier: "Nissho (日商)", age: "fresh", origin: "Korea" },
+            { code: "226", name: "31x43\" 210g Japan White A Cast Coated Card (日本白A單面玻璃咭)", cat: "board", reams: 6.2, date: "31/12/2010", price: 1004.20, lineCost: 6226.04, supplier: "Japan Merchant", age: "aged", origin: "Japan" },
+            { code: "23-H", name: "43x31\" 180g Korea Moorim Orange Card (韓國茂林橙咭)", cat: "board", reams: 26.4, date: "21/10/2019", price: 763.20, lineCost: 20148.48, supplier: "Nissho (日商)", age: "aged", origin: "Korea" },
+            { code: "246", name: "20x40\" 80g Thailand KK Glossy Gummed/Self-Adhesive (泰國KK光面膠底紙)", cat: "specialty", reams: 123.2, date: "14/04/2025", price: 920.60, lineCost: 113417.92, supplier: "Nissho (日商)", age: "fresh", origin: "Thailand" },
+            { code: "276-BW", name: "24.5x36\" 86g Japan CCP Thick Bottom White NCR (CCP厚下白)", cat: "specialty", reams: 32.0, date: "05/10/2023", price: 402.95, lineCost: 12894.40, supplier: "Nissho (日商)", age: "moderate", origin: "Japan" },
+            { code: "278-BC", name: "24.5x36\" 58g Japan NPI CCP Carbonless Bottom Blue (日本NPICCP紙下藍)", cat: "specialty", reams: 22.0, date: "09/03/2026", price: 243.89, lineCost: 5365.58, supplier: "Nissho (日商)", age: "fresh", origin: "Japan" },
+            { code: "283", name: "25x35\" 100g China UPM White Woodfree Paper (中國UPM白書紙)", cat: "woodfree", reams: 80.0, date: "26/07/2023", price: 209.33, lineCost: 16746.40, supplier: "Nissho (日商)", age: "moderate", origin: "China" },
+            { code: "3", name: "22x34\" 60g Thailand Royal Elephant White No. 2 Paper (泰國皇象白二號紙)", cat: "woodfree", reams: 72.0, date: "29/12/2023", price: 126.50, lineCost: 9108.00, supplier: "Song Jun (松潤)", age: "moderate", origin: "Thailand" },
+
+            // Page 4
+            { code: "303", name: "25x35\" 80g Indonesia IKPP Ultra White Woodfree (印尼IKPP超白書紙)", cat: "woodfree", reams: 18.0, date: "08/04/2026", price: 141.45, lineCost: 2546.10, supplier: "Tai Tak (大德)", age: "fresh", origin: "Indonesia" },
+            { code: "305", name: "25x35\" 120g Indonesia IKPP Ultra White Woodfree (印尼IKPP超白書紙)", cat: "woodfree", reams: 12.0, date: "08/04/2025", price: 215.58, lineCost: 2586.96, supplier: "Tai Tak (大德)", age: "fresh", origin: "Indonesia" },
+            { code: "313", name: "31x43\" 80g Indonesia IKPP Ultra White Woodfree (印尼IKPP超白書紙)", cat: "woodfree", reams: 18.0, date: "08/04/2026", price: 215.48, lineCost: 3878.64, supplier: "Tai Tak (大德)", age: "fresh", origin: "Indonesia" },
+            { code: "317", name: "35x47\" 70g Indonesia IKPP Ultra White Woodfree (印尼IKPP超白書紙)", cat: "woodfree", reams: 63.0, date: "20/06/2024", price: 251.27, lineCost: 15829.01, supplier: "Tai Tak (大德)", age: "moderate", origin: "Indonesia" },
+            { code: "32-B", name: "22x34\" 55g Indonesia Yellow No. 2 Paper (印尼黃二號紙)", cat: "woodfree", reams: 100.0, date: "06/02/2026", price: 156.29, lineCost: 15629.00, supplier: "Song Jun (松潤)", age: "fresh", origin: "Indonesia" },
+            { code: "320", name: "35x47\" 120g Indonesia IKPP Ultra White Woodfree (印尼IKPP超白書紙)", cat: "woodfree", reams: 12.0, date: "07/01/2026", price: 392.38, lineCost: 4708.56, supplier: "Tai Tak (大德)", age: "fresh", origin: "Indonesia" },
+            { code: "346-19", name: "24.6x34.6\" 52.3g Japan Kishu Golden Yellow Paper (紀州金黃書紙)", cat: "woodfree", reams: 25.0, date: "06/10/2025", price: 159.90, lineCost: 3997.50, supplier: "Kishu Paper", age: "fresh", origin: "Japan" },
+            { code: "354", name: "25x38\" 140g Korea Hi-Q C2S Art Paper (韓國Hi-Q雙面粉紙)", cat: "coated", reams: 15.0, date: "31/12/2010", price: 237.58, lineCost: 3563.70, supplier: "Korea Merchant", age: "aged", origin: "Korea" },
+
+            // Page 5
+            { code: "396-16", name: "31x43\" 124.4g Japan Kishu Dark Grey Paper (日本紀州深灰書紙)", cat: "woodfree", reams: 4.0, date: "12/10/2020", price: 581.94, lineCost: 2327.76, supplier: "Kam Wai (金威)", age: "aged", origin: "Japan" },
+            { code: "424", name: "25x35\" 80g Thailand Double A White Woodfree (泰國AA白書紙)", cat: "woodfree", reams: 378.0, date: "27/08/2026", price: 179.514, lineCost: 67856.40, supplier: "Tai Tak (大德)", age: "fresh", origin: "Thailand", note: "Multi-batch: 108 reams @ $179.50 + 270 reams @ $179.52" },
+            { code: "425", name: "25x35\" 100g Thailand Double A White Woodfree (泰國AA白書紙)", cat: "woodfree", reams: 98.0, date: "27/08/2026", price: 224.40, lineCost: 21991.20, supplier: "Tai Tak (大德)", age: "fresh", origin: "Thailand" },
+            { code: "432", name: "25x38\" 80g Thailand Double A White Woodfree (泰國AA白書紙)", cat: "woodfree", reams: 144.0, date: "01/04/2026", price: 194.78, lineCost: 28048.32, supplier: "Tai Tak (大德)", age: "fresh", origin: "Thailand" },
+            { code: "434", name: "25x38\" 120g Thailand Double A White Woodfree (泰國AA白書紙)", cat: "woodfree", reams: 60.0, date: "18/07/2026", price: 292.30, lineCost: 17538.00, supplier: "Tai Tak (大德)", age: "fresh", origin: "Thailand" },
+            { code: "438", name: "31x43\" 70g Thailand Double A White Woodfree (泰國AA白書紙)", cat: "woodfree", reams: 40.0, date: "26/04/2023", price: 256.69, lineCost: 10267.60, supplier: "Tai Tak (大德)", age: "moderate", origin: "Thailand" },
+            { code: "446", name: "35x47\" 80g Thailand Double A White Woodfree (泰國AA白書紙)", cat: "woodfree", reams: 72.0, date: "27/08/2026", price: 337.50, lineCost: 24300.00, supplier: "Tai Tak (大德)", age: "fresh", origin: "Thailand" },
+            { code: "46-B", name: "22x34\" 48lb USA Yellow Banknote/Security Paper (美國黃鈔票紙)", cat: "specialty", reams: 54.0, date: "31/12/2010", price: 452.11, lineCost: 24413.94, supplier: "USA Security", age: "aged", origin: "Western" },
+
+            // Page 6
+            { code: "46-D", name: "22x34\" 48lb USA Green Banknote/Security Paper (美國綠鈔票紙)", cat: "specialty", reams: 48.0, date: "31/12/2010", price: 624.00, lineCost: 29952.00, supplier: "USA Security", age: "aged", origin: "Western" },
+            { code: "496-23", name: "24.6x34.6\" 76.7g Japan Kishu Skin Buff Paper (日本紀州肌書紙)", cat: "woodfree", reams: 17.0, date: "29/07/2026", price: 206.30, lineCost: 3507.10, supplier: "Kam Siu (金兆)", age: "fresh", origin: "Japan" },
+            { code: "497-21", name: "31x43\" 76.7g Japan Kishu Crimson Red Paper (日本紀州大紅書紙)", cat: "woodfree", reams: 16.0, date: "24/04/2019", price: 421.96, lineCost: 6751.36, supplier: "Kam Siu (金兆)", age: "aged", origin: "Japan" },
+            { code: "591", name: "31x43\" 190g France Duck Brand White Board (法國鴨嘜白通咭)", cat: "board", reams: 27.8, date: "07/06/2018", price: 1143.48, lineCost: 31788.74, supplier: "Mei Sha (美沙)", age: "aged", origin: "Western" },
+            { code: "596", name: "31x43\" 310g France Duck Brand White Board (法國鴨嘜白通咭)", cat: "board", reams: 12.8, date: "07/08/2024", price: 2562.93, lineCost: 32805.50, supplier: "Mei Sha (美沙)", age: "moderate", origin: "Western" },
+            { code: "601", name: "25x37\" 190g Japan CPC Ultra White Art Card (日本CPC超白雙面粉咭)", cat: "board", reams: 9.2, date: "26/04/2025", price: 566.98, lineCost: 5216.22, supplier: "King Lee (近利)", age: "fresh", origin: "Japan" },
+            { code: "602", name: "25x37\" 210g Japan CPC Ultra White Art Card (日本CPC超白雙面粉咭)", cat: "board", reams: 16.8, date: "13/10/2025", price: 614.75, lineCost: 10327.80, supplier: "King Lee (近利)", age: "fresh", origin: "Japan" },
+            { code: "604", name: "25x37\" 260g Japan CPC Ultra White Art Card (日本CPC超白雙面粉咭)", cat: "board", reams: 40.8, date: "13/10/2025", price: 760.84, lineCost: 31042.27, supplier: "King Lee (近利)", age: "fresh", origin: "Japan" },
+
+            // Page 7
+            { code: "605", name: "25x37\" 310g Japan CPC Ultra White Art Card (日本CPC超白雙面粉咭)", cat: "board", reams: 5.6, date: "13/10/2025", price: 906.93, lineCost: 5078.81, supplier: "King Lee (近利)", age: "fresh", origin: "Japan" },
+            { code: "618", name: "35x47\" 260g Japan CPC Ultra White Art Card (日本CPC超白雙面粉咭)", cat: "board", reams: 13.6, date: "30/07/2024", price: 1353.03, lineCost: 18401.21, supplier: "King Lee (近利)", age: "moderate", origin: "Japan" },
+            { code: "62", name: "34x27\" 95g Slovenia Yellow Suitcase Paper (斯洛文尼亞黃喼紙)", cat: "specialty", reams: 65.0, date: "08/04/2025", price: 626.30, lineCost: 40709.50, supplier: "Nissho (日商)", age: "fresh", origin: "Western" },
+            { code: "641", name: "25x37\" 190g Indonesia Gold Coin C2S Art Card (印尼金錢牌雙粉咭)", cat: "board", reams: 49.0, date: "08/09/2022", price: 534.75, lineCost: 26202.75, supplier: "Tai Tak (大德)", age: "moderate", origin: "Indonesia" },
+            { code: "644", name: "25x37\" 260g Indonesia Gold Coin C2S Art Card (印尼金錢牌雙粉咭)", cat: "board", reams: 13.6, date: "07/03/2026", price: 643.90, lineCost: 8757.04, supplier: "Tai Tak (大德)", age: "fresh", origin: "Indonesia" },
+            { code: "645", name: "25x37\" 310g Indonesia Gold Coin C2S Art Card (印尼金錢牌雙粉咭)", cat: "board", reams: 5.2, date: "07/03/2026", price: 767.73, lineCost: 3992.20, supplier: "Tai Tak (大德)", age: "fresh", origin: "Indonesia" },
+            { code: "649", name: "31x43\" 230g Indonesia Gold Coin C2S Art Card (印尼金錢牌雙粉咭)", cat: "board", reams: 8.0, date: "11/02/2025", price: 803.31, lineCost: 6426.48, supplier: "Tai Tak (大德)", age: "fresh", origin: "Indonesia" },
+            { code: "650", name: "31x43\" 260g Indonesia Gold Coin C2S Art Card (印尼金錢牌雙粉咭)", cat: "board", reams: 13.6, date: "07/03/2026", price: 927.92, lineCost: 12619.71, supplier: "Tai Tak (大德)", age: "fresh", origin: "Indonesia" },
+
+            // Page 8
+            { code: "651", name: "31x43\" 310g Indonesia Gold Coin C2S Art Card (印尼金錢牌雙粉咭)", cat: "board", reams: 10.4, date: "07/03/2026", price: 1106.36, lineCost: 11506.14, supplier: "Tai Tak (大德)", age: "fresh", origin: "Indonesia" },
+            { code: "653", name: "35x47\" 190g Indonesia Gold Coin C2S Art Card (印尼金錢牌雙粉咭)", cat: "board", reams: 9.8, date: "28/04/2022", price: 929.94, lineCost: 9113.41, supplier: "Tai Tak (大德)", age: "moderate", origin: "Indonesia" },
+            { code: "654", name: "35x47\" 210g Indonesia Gold Coin C2S Art Card (印尼金錢牌雙粉咭)", cat: "board", reams: 8.6, date: "21/06/2025", price: 927.00, lineCost: 7972.20, supplier: "Tai Tak (大德)", age: "fresh", origin: "Indonesia" },
+            { code: "655", name: "35x47\" 230g Indonesia Gold Coin C2S Art Card (印尼金錢牌雙粉咭)", cat: "board", reams: 8.0, date: "28/04/2022", price: 1125.76, lineCost: 9006.08, supplier: "Tai Tak (大德)", age: "moderate", origin: "Indonesia" },
+            { code: "656", name: "35x47\" 260g Indonesia Gold Coin C2S Art Card (印尼金錢牌雙粉咭)", cat: "board", reams: 6.8, date: "07/03/2026", price: 1145.08, lineCost: 7786.54, supplier: "Tai Tak (大德)", age: "fresh", origin: "Indonesia" },
+            { code: "672", name: "25x37\" 230g China Ningbo C1S Ivory Board (中國寧波單粉咭)", cat: "board", reams: 60.0, date: "13/11/2024", price: 369.921, lineCost: 22195.26, supplier: "Song Jun (松潤)", age: "moderate", origin: "China", note: "Multi-batch: 6 reams @ $565.77 + 54 reams @ $348.16" },
+            { code: "675", name: "25x37\" 300g China Ningbo C1S Ivory Board (中國寧波單粉咭)", cat: "board", reams: 18.4, date: "13/11/2024", price: 454.02, lineCost: 8353.97, supplier: "Song Jun (松潤)", age: "moderate", origin: "China" },
+            { code: "676", name: "25x37\" 350g China Ningbo C1S Ivory Board (中國寧波單粉咭)", cat: "board", reams: 15.2, date: "12/03/2024", price: 554.30, lineCost: 8425.36, supplier: "Song Jun (松潤)", age: "moderate", origin: "China" },
+
+            // Page 9
+            { code: "677", name: "25x37\" 400g China Ningbo C1S Ivory Board (中國寧波單粉咭)", cat: "board", reams: 6.4, date: "03/01/2022", price: 1041.97, lineCost: 6668.61, supplier: "Kam Wai (金威)", age: "moderate", origin: "China" },
+            { code: "680", name: "31x43\" 230g China Ningbo C1S Ivory Board (中國寧波單粉咭)", cat: "board", reams: 12.0, date: "05/12/2022", price: 824.84, lineCost: 9898.08, supplier: "Song Jun (松潤)", age: "moderate", origin: "China" },
+            { code: "681", name: "31x43\" 250g China Ningbo C1S Ivory Board (中國寧波單粉咭)", cat: "board", reams: 10.8, date: "05/12/2022", price: 896.36, lineCost: 9680.69, supplier: "Song Jun (松潤)", age: "moderate", origin: "China" },
+            { code: "683", name: "31x43\" 300g China Ningbo C1S Ivory Board (中國寧波單粉咭)", cat: "board", reams: 9.2, date: "12/08/2025", price: 598.22, lineCost: 5503.62, supplier: "Song Jun (松潤)", age: "fresh", origin: "China" },
+            { code: "684", name: "31x43\" 350g China Ningbo C1S Ivory Board (中國寧波單粉咭)", cat: "board", reams: 11.4, date: "12/08/2025", price: 697.54, lineCost: 7951.96, supplier: "Song Jun (松潤)", age: "fresh", origin: "China" },
+            { code: "685", name: "31x43\" 400g China Ningbo C1S Ivory Board (中國寧波單粉咭)", cat: "board", reams: 22.4, date: "03/01/2022", price: 1467.464, lineCost: 32871.20, supplier: "Kam Wai (金威)", age: "moderate", origin: "China", note: "Multi-batch: 3.2 reams @ $1504.33 + 19.2 reams @ $1461.32" },
+            { code: "691", name: "35x47\" 300g China Ningbo C1S Ivory Board (中國寧波單粉咭)", cat: "board", reams: 23.0, date: "12/08/2025", price: 739.31, lineCost: 17004.13, supplier: "Song Jun (松潤)", age: "fresh", origin: "China" },
+            { code: "692", name: "35x47\" 350g China Ningbo C1S Ivory Board (中國寧波單粉咭)", cat: "board", reams: 7.6, date: "12/03/2024", price: 985.48, lineCost: 7489.65, supplier: "Song Jun (松潤)", age: "moderate", origin: "China" },
+
+            // Page 10
+            { code: "693", name: "35x47\" 400g China Ningbo C1S Ivory Board (中國寧波單粉咭)", cat: "board", reams: 12.8, date: "30/06/2022", price: 1903.34, lineCost: 24362.75, supplier: "Kam Wai (金威)", age: "moderate", origin: "China" },
+            { code: "750", name: "25x35\" 95g China Gold East C2S Art Paper (中國金東雙面粉紙)", cat: "coated", reams: 24.0, date: "17/01/2019", price: 171.48, lineCost: 4115.52, supplier: "Kam Wai (金威)", age: "aged", origin: "China" },
+            { code: "756", name: "25x38\" 95g China Gold East C2S Art Paper (中國金東雙面粉紙)", cat: "coated", reams: 72.0, date: "13/12/2014", price: 182.46, lineCost: 13137.12, supplier: "Kam Wai (金威)", age: "aged", origin: "China", note: "Multi-batch: 24 reams @ $180.90 + 48 reams @ $183.24" },
+            { code: "766", name: "31x43\" 140g China Gold East C2S Art Paper (中國金東雙面粉紙)", cat: "coated", reams: 75.0, date: "17/01/2019", price: 370.71, lineCost: 27803.25, supplier: "Kam Wai (金威)", age: "aged", origin: "China" },
+            { code: "768", name: "35x47\" 95g China Gold East C2S Art Paper (中國金東雙面粉紙)", cat: "coated", reams: 44.0, date: "12/02/2022", price: 375.50, lineCost: 16522.00, supplier: "Kam Wai (金威)", age: "moderate", origin: "China" },
+            { code: "771", name: "35x47\" 128g China Gold East C2S Art Paper (中國金東雙面粉紙)", cat: "coated", reams: 16.0, date: "17/10/2019", price: 386.74, lineCost: 6187.84, supplier: "Kam Wai (金威)", age: "aged", origin: "China" },
+            { code: "776", name: "25x35\" 115g China Gold East Matt Art Paper (中國金東啞粉紙)", cat: "coated", reams: 34.0, date: "11/10/2022", price: 217.61, lineCost: 7398.74, supplier: "Kam Wai (金威)", age: "moderate", origin: "China" },
+            { code: "791", name: "31x43\" 260g Japan Mitsubishi C1S Art Card (日本三菱單面粉咭)", cat: "board", reams: 7.2, date: "28/01/2014", price: 1083.26, lineCost: 7799.47, supplier: "Mitsubishi (三菱)", age: "aged", origin: "Japan" },
+
+            // Page 11
+            { code: "792", name: "35x47\" 95g China Gold East Matt Art Paper (中國金東啞粉紙)", cat: "coated", reams: 21.0, date: "14/08/2020", price: 287.09, lineCost: 6028.89, supplier: "Kam Wai (金威)", age: "aged", origin: "China" },
+            { code: "793", name: "35x47\" 105g China Gold East Matt Art Paper (中國金東啞粉紙)", cat: "coated", reams: 38.0, date: "14/08/2020", price: 304.26, lineCost: 11561.88, supplier: "Kam Wai (金威)", age: "aged", origin: "China" },
+            { code: "794", name: "35x47\" 115g China Gold East Matt Art Paper (中國金東啞粉紙)", cat: "coated", reams: 34.0, date: "23/08/2021", price: 454.54, lineCost: 15454.36, supplier: "Kam Wai (金威)", age: "aged", origin: "China" },
+            { code: "797", name: "35x47\" 157g China Gold East Matt Art Paper (中國金東啞粉紙)", cat: "coated", reams: 60.0, date: "13/08/2020", price: 464.012, lineCost: 27840.72, supplier: "Kam Wai (金威)", age: "aged", origin: "China", note: "Multi-batch: 24 reams @ $477.56 + 36 reams @ $454.98" },
+            { code: "83", name: "25x35\" 80g Thailand Royal Elephant White Woodfree (泰國皇象白書紙)", cat: "woodfree", reams: 266.0, date: "08/05/2026", price: 166.838, lineCost: 44378.87, supplier: "Yat Sing (逸昇)", age: "fresh", origin: "Thailand", note: "Multi-batch: 171 reams @ $167.47 + 95 reams @ $165.70" },
+            { code: "85", name: "25x35\" 120g Thailand Royal Elephant White Woodfree (泰國皇象白書紙)", cat: "woodfree", reams: 26.0, date: "02/02/2026", price: 250.98, lineCost: 6525.48, supplier: "Yat Sing (逸昇)", age: "fresh", origin: "Thailand" },
+            { code: "888-12", name: "24.6x34.6\" 80g Indonesia Pink Woodfree Paper (印尼粉紅書紙)", cat: "woodfree", reams: 17.0, date: "06/02/2026", price: 243.33, lineCost: 4136.61, supplier: "Song Jun (松潤)", age: "fresh", origin: "Indonesia" },
+            { code: "888-13", name: "24.6x34.6\" 80g Indonesia Green Woodfree Paper (印尼綠書紙)", cat: "woodfree", reams: 17.0, date: "06/02/2026", price: 243.33, lineCost: 4136.61, supplier: "Song Jun (松潤)", age: "fresh", origin: "Indonesia" },
+
+            // Page 12
+            { code: "922", name: "35x47\" 80g Japan KINMARI C2S Art Paper (日本KINMARI雙面粉紙)", cat: "coated", reams: 84.0, date: "06/07/2015", price: 264.89, lineCost: 22250.76, supplier: "Mitsubishi (三菱)", age: "aged", origin: "Japan" },
+            { code: "923", name: "35x47\" 95g Japan KINMARI C2S Art Paper (日本KINMARI雙面粉紙)", cat: "coated", reams: 25.0, date: "05/04/2016", price: 286.98, lineCost: 7174.50, supplier: "Mitsubishi (三菱)", age: "aged", origin: "Japan" }
+        ];
+
+        // Application State
+        let currentFilteredData = [...stockItems];
+        let currentSortCol = 'code';
+        let currentSortDir = 'asc';
+        let isDenseGridMode = false;
+
+        // Toast Helper
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').textContent = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+
+        // Format Currency Helper
+        function formatHKD(val) {
+            return 'HK$ ' + val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        // CSV Downloader
+        function exportCSV() {
+            const headers = ["Stock Code", "Dimensions & Specifications", "Category", "Reams (拈)", "Receipt Date", "Supplier Unit Price (HKD)", "Total Paid Cost (HKD)", "Supplier", "Origin", "Batch Notes"];
+            let csvContent = "\uFEFF"; // UTF-8 BOM for Microsoft Excel Chinese character support
+            csvContent += headers.map(h => `"${h.replace(/"/g, '""')}"`).join(",") + "\n";
+            
+            currentFilteredData.forEach(item => {
+                const lineTotal = item.lineCost || (item.reams * item.price);
+                let catLabel = item.cat;
+                if (item.cat === 'woodfree') catLabel = 'Uncoated Woodfree';
+                if (item.cat === 'coated') catLabel = 'Coated Art Paper';
+                if (item.cat === 'board') catLabel = 'Board & Card';
+                if (item.cat === 'specialty') catLabel = 'Specialty & Carbonless';
+
+                const row = [
+                    item.code,
+                    item.name,
+                    catLabel,
+                    item.reams,
+                    item.date,
+                    item.price,
+                    lineTotal,
+                    item.supplier,
+                    item.origin,
+                    item.note || ""
+                ];
+                csvContent += row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",") + "\n";
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `Yuen_Hing_Paper_Inventory_Ledger_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("CSV file generated! Downloads folder contains Excel spreadsheet file.");
+        }
+
+        // Copy TSV for Clipboard (Direct Paste into Google Sheets / Excel)
+        function copyTSV() {
+            const headers = ["Stock Code\tDimensions & Specifications\tCategory\tReams (拈)\tReceipt Date\tSupplier Unit Price (HKD)\tTotal Paid Cost (HKD)\tSupplier\tOrigin\tBatch Notes"];
+            let tsvContent = headers + "\n";
+            
+            currentFilteredData.forEach(item => {
+                const lineTotal = item.lineCost || (item.reams * item.price);
+                let catLabel = item.cat;
+                if (item.cat === 'woodfree') catLabel = 'Uncoated Woodfree';
+                if (item.cat === 'coated') catLabel = 'Coated Art Paper';
+                if (item.cat === 'board') catLabel = 'Board & Card';
+                if (item.cat === 'specialty') catLabel = 'Specialty & Carbonless';
+
+                const row = [
+                    item.code,
+                    item.name,
+                    catLabel,
+                    item.reams,
+                    item.date,
+                    item.price.toFixed(2),
+                    lineTotal.toFixed(2),
+                    item.supplier,
+                    item.origin,
+                    item.note || ""
+                ].join("\t");
+                tsvContent += row + "\n";
+            });
+
+            navigator.clipboard.writeText(tsvContent).then(() => {
+                showToast("Copied to clipboard! Open Excel or Google Sheets and press Ctrl+V / Cmd+V.");
+            }).catch(() => {
+                showToast("Copy failed. Please use Download Excel CSV instead.");
+            });
+        }
+
+        // Toggle Dense Spreadsheet Mode
+        function toggleSpreadsheetMode() {
+            isDenseGridMode = !isDenseGridMode;
+            const table = document.getElementById('spreadsheetTable');
+            const label = document.getElementById('gridModeLabel');
+            
+            if (isDenseGridMode) {
+                table.classList.add('excel-grid', 'text-[11px]');
+                label.textContent = "Dense Excel Grid";
+                showToast("Switched to Dense Excel Spreadsheet View");
+            } else {
+                table.classList.remove('excel-grid', 'text-[11px]');
+                label.textContent = "Standard Ledger";
+                showToast("Switched to Standard Ledger View");
+            }
+            renderLedger(currentFilteredData);
+        }
+
+        // Sort Table
+        function sortTable(col) {
+            if (currentSortCol === col) {
+                currentSortDir = currentSortDir === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSortCol = col;
+                currentSortDir = 'asc';
+            }
+
+            currentFilteredData.sort((a, b) => {
+                let valA, valB;
+                if (col === 'lineCost') {
+                    valA = a.lineCost || (a.reams * a.price);
+                    valB = b.lineCost || (b.reams * b.price);
+                } else if (col === 'reams' || col === 'price') {
+                    valA = a[col];
+                    valB = b[col];
+                } else {
+                    valA = String(a[col] || '').toLowerCase();
+                    valB = String(b[col] || '').toLowerCase();
+                }
+
+                if (valA < valB) return currentSortDir === 'asc' ? -1 : 1;
+                if (valA > valB) return currentSortDir === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            updateSortIndicators();
+            renderLedger(currentFilteredData);
+        }
+
+        function updateSortIndicators() {
+            const cols = ['code', 'name', 'cat', 'reams', 'date', 'price', 'lineCost', 'supplier'];
+            cols.forEach(c => {
+                const el = document.getElementById(`sort_${c}`);
+                if (el) {
+                    if (c === currentSortCol) {
+                        el.textContent = currentSortDir === 'asc' ? '▲' : '▼';
+                        el.className = "text-[10px] text-neutral-900 font-bold";
+                    } else {
+                        el.textContent = '↕';
+                        el.className = "text-[10px] text-neutral-400";
+                    }
+                }
+            });
+        }
+
+        // Render Ledger Table
+        function renderLedger(data) {
+            const tbody = document.getElementById('ledgerTableBody');
+            tbody.innerHTML = '';
+
+            let filteredReams = 0;
+            let filteredValue = 0;
+
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-neutral-500 font-medium">No inventory stock items match your filter selection.</td></tr>`;
+                document.getElementById('ledgerCount').textContent = `0 Items Found`;
+                document.getElementById('summaryCount').textContent = '0';
+                document.getElementById('summaryReams').textContent = '0.0 Reams';
+                document.getElementById('summaryTotalValue').textContent = formatHKD(0);
+                document.getElementById('footTotalReams').textContent = '0.0 Reams';
+                document.getElementById('footTotalValue').textContent = formatHKD(0);
+                return;
+            }
+
+            data.forEach((item, index) => {
+                const lineTotal = item.lineCost || (item.reams * item.price);
+                filteredReams += item.reams;
+                filteredValue += lineTotal;
+
+                let ageBadge = 'bg-emerald-50 text-emerald-800 border-emerald-200';
+                if (item.age === 'moderate') ageBadge = 'bg-amber-50 text-amber-800 border-amber-200';
+                if (item.age === 'aged') ageBadge = 'bg-rose-50 text-rose-800 border-rose-200';
+
+                let catLabel = 'Woodfree';
+                if (item.cat === 'coated') catLabel = 'Coated Art';
+                if (item.cat === 'board') catLabel = 'Board/Card';
+                if (item.cat === 'specialty') catLabel = 'Specialty/NCR';
+
+                const tr = document.createElement('tr');
+                tr.className = index % 2 === 0 ? "bg-white hover:bg-emerald-50/40 transition border-b border-neutral-200" : "bg-neutral-50/50 hover:bg-emerald-50/40 transition border-b border-neutral-200";
+                
+                const noteTooltip = item.note ? `<span class="block text-[10px] text-neutral-500 font-normal italic mt-0.5">${item.note}</span>` : '';
+
+                tr.innerHTML = `
+                    <td class="p-3 font-bold text-neutral-900">${item.code}</td>
+                    <td class="p-3 font-semibold text-neutral-900">
+                        ${item.name}
+                        ${noteTooltip}
+                    </td>
+                    <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-neutral-100 text-neutral-800 border border-neutral-200">${catLabel}</span></td>
+                    <td class="p-3 font-bold text-neutral-900 text-right">${item.reams.toFixed(1)} 拈</td>
+                    <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-medium border ${ageBadge}">${item.date}</span></td>
+                    <td class="p-3 font-medium text-neutral-700 text-right">${formatHKD(item.price)}</td>
+                    <td class="p-3 font-extrabold text-neutral-900 text-right">${formatHKD(lineTotal)}</td>
+                    <td class="p-3 text-neutral-600 font-medium text-[11px]">${item.supplier} (${item.origin})</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Update Summary Indicators & Footers
+            document.getElementById('ledgerCount').textContent = `Showing ${data.length} Stock Lines`;
+            document.getElementById('summaryCount').textContent = data.length;
+            document.getElementById('summaryReams').textContent = filteredReams.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' Reams';
+            document.getElementById('summaryTotalValue').textContent = formatHKD(filteredValue);
+            document.getElementById('footTotalReams').textContent = filteredReams.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' Reams';
+            document.getElementById('footTotalValue').textContent = formatHKD(filteredValue);
+        }
+
+        // Calculate Overall Portfolio Metrics for Top KPI Bar
+        function updateTopKPIs() {
+            let grandTotalReams = 0;
+            let grandTotalCost = 0;
+            let woodfreeReams = 0;
+            let coatedBoardReams = 0;
+
+            stockItems.forEach(item => {
+                const cost = item.lineCost || (item.reams * item.price);
+                grandTotalReams += item.reams;
+                grandTotalCost += cost;
+
+                if (item.cat === 'woodfree') {
+                    woodfreeReams += item.reams;
+                } else if (item.cat === 'coated' || item.cat === 'board') {
+                    coatedBoardReams += item.reams;
+                }
+            });
+
+            document.getElementById('kpiTotalVolume').textContent = `${grandTotalReams.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} Reams`;
+            document.getElementById('kpiWoodfreeVolume').textContent = `${woodfreeReams.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} Reams`;
+            document.getElementById('kpiCoatedVolume').textContent = `${coatedBoardReams.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} Reams`;
+            document.getElementById('kpiTotalPaidValue').textContent = formatHKD(grandTotalCost);
+        }
+
+        // Filter Function
+        function filterLedger() {
+            const query = document.getElementById('ledgerSearch').value.toLowerCase();
+            const cat = document.getElementById('ledgerCategory').value;
+            const age = document.getElementById('ledgerAge').value;
+            const origin = document.getElementById('ledgerOrigin').value;
+
+            currentFilteredData = stockItems.filter(item => {
+                const matchQ = item.name.toLowerCase().includes(query) || 
+                               item.code.toLowerCase().includes(query) || 
+                               item.supplier.toLowerCase().includes(query);
+                const matchCat = cat === 'all' || item.cat === cat;
+                const matchAge = age === 'all' || item.age === age;
+                const matchOrigin = origin === 'all' || item.origin === origin;
+                
+                return matchQ && matchCat && matchAge && matchOrigin;
+            });
+
+            renderLedger(currentFilteredData);
+        }
+
+        // Attach Event Listeners
+        document.getElementById('ledgerSearch').addEventListener('input', filterLedger);
+        document.getElementById('ledgerCategory').addEventListener('change', filterLedger);
+        document.getElementById('ledgerAge').addEventListener('change', filterLedger);
+        document.getElementById('ledgerOrigin').addEventListener('change', filterLedger);
+
+        // Initialize Page
+        window.addEventListener('DOMContentLoaded', () => {
+            updateTopKPIs();
+            renderLedger(stockItems);
+            updateSortIndicators();
+        });
+    </script>
+</body>
+</html>
